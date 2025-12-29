@@ -275,7 +275,7 @@ Write-Host $pass_create_body
     }
     catch{
         
-        Write-Error "Error creating password! Please check if the required fields are empty!"
+        Write-Error "Error creating password! Please check if the required fields are empty! Error: $($_.exception.message)"
         return
     }
     
