@@ -203,14 +203,14 @@ $pass_create_body = @{
     data = @{
         type = "passwords"
         attributes = @{
-            "organization-id"      = $password_org_id.Trim()
+            "organization-id"      = $password_org_id
             name                   = $password_name.Trim()
             username               = $password_username.Trim()
             password               = $password_value.Trim()
             url                    = $password_url.Trim()
             notes                  = $password_notes.Trim()
-            "password-category-id" = $password_category_id.Trim()
-            "password-folder-id"   = $password_folder_id.Trim()
+            "password-category-id" = $password_category_id
+            "password-folder-id"   = $password_folder_id
             otpSecret              = $password_otp.Trim()
         }
     }
@@ -292,6 +292,7 @@ if ($access_token -eq $null){
     $access_token = request_data
 
 }
+
 
 
 
