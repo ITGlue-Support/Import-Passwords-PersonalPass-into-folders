@@ -328,7 +328,6 @@ function extract_csv {
 
             Write-Host "Unable to create the password record $($passwords.name) due to the missing organization! Moving to the next records" -ForegroundColor Yellow
 
-            return
         }
 
         Write-Host $pass_org_id $($passwords.name) $($passwords.username) $($passwords.password) $($passwords.otp_secret) $($passwords.url) $pass_folder_id $pass_type_id
@@ -375,6 +374,7 @@ if ($access_token -eq $null){
     $access_token = request_data
     
 }
+
 
 
 
