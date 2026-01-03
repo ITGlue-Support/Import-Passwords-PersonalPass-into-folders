@@ -1,3 +1,4 @@
+$newcsv = {} | Select-Object 'name','password_folder','organization','username','password','otp_secret','password_category','url','notes' | Export-Csv -NoTypeInformation failedpasswords.csv
 ############### Authorization Token ###############################
 
 function authorization_token
@@ -28,8 +29,6 @@ try{
     $auth_headers.Add("Content-Type", "application/json")
 
     $gen_jwt_url = "https://$($subdomain).itglue.com/login/?sso_disabled=true&generate_jwt=1"
-
-    Write-Host $gen_jwt_url
 
     $gen_jwt = Invoke-RestMethod -Uri $gen_jwt_url -Method 'POST' -Body $body -Headers $auth_headers
 
@@ -63,6 +62,28 @@ function set_header {
     $global:headers.Add("Authorization", "Bearer $token")
 
 }
+#################### Log Failed records #########################
+
+function failed_records {
+
+    param (
+        [string]$name,
+        [string]$password_folder,
+        [string]$organization,
+        [string]$username,
+        [string]$password,
+        [string]$otp_secret,
+        [string]$password_category,
+        [string]$url,
+        [string]$notes
+    
+    )
+
+    $csvfile = Import-Csv failedpasswords.csv
+
+    $csvfile | select @{N="name"; E={$name}},@{N="password_folder"; E={$password_folder}}, @{N="organization"; E={$organization}},@{N="username"; E={$username}},@{N="password"; E={$password}},@{N="otp_secret"; E={$otp_secret}},@{N="password_category"; E={$password_category}},@{N="url"; E={$url}},@{N="notes"; E={$notes}} | export-CSV failedpasswords.csv -Append -NoTypeInformation
+
+}
 
 #################### Get Organization ID ########################
 
@@ -73,13 +94,26 @@ function get_org_id {
     )
     try{
 
+        if ($org_name -match ","){
+
+          $org_name = $org_name -replace ",", '\,'
+
+          $encodedName = [Uri]::EscapeDataString($org_name) -replace '\\%5C,','\,'
+
+          $org_url = "https://api.itglue.com/organizations?filter[name]=$encodedName"
+
+        }else {
+
         $org_url = "https://api.itglue.com/organizations?filter[name]=" + [uri]::EscapeDataString($org_name)
+
+        }
 
         $find_org = Invoke-RestMethod -Uri $org_url -Method 'GET' -Headers $headers
 
         if ($($find_org.data.id).Count -gt 1) {
         
             Write-Host "Found mutliple organization with similar name. Using the organization with id:$($find_org.data.id[0])"
+
             return $($find_org.data.id[0])
         }else{
 
@@ -88,6 +122,8 @@ function get_org_id {
     }
     catch {
         Write-Host "Make sure organization $org_name already exist in IT Glue! Error: $($_.exception.message)" -ForegroundColor Red
+
+
 
     }
 }
@@ -244,7 +280,10 @@ function create_password {
         [string]$password_url,
         [string]$password_notes,
         [string]$password_folder_id,
-        [string]$password_category_id
+        [string]$password_category_id,
+        [string]$type_name,
+        [string]$folder_name,
+        [string]$organization
     )
 
 
@@ -276,7 +315,9 @@ Write-Host $pass_create_body
     catch{
         
         Write-Error "Error creating password! Please check if the required fields are empty! Error: $($_.exception.message)"
-        return
+
+        failed_records -name $password_name.Trim() -organization $organization -username $password_username.Trim() -password $password_value.Trim() -url $password_url.Trim() -notes $password_notes.Trim() -password_category $type_name -password_folder $folder_name -otp_secret $password_otp.Trim()
+        
     }
     
 
@@ -319,12 +360,11 @@ function extract_csv {
 
             Write-Host "Unable to create the password record $($passwords.name) due to the missing organization! Moving to the next records" -ForegroundColor Yellow
 
-            return
         }
 
         Write-Host $pass_org_id $($passwords.name) $($passwords.username) $($passwords.password) $($passwords.otp_secret) $($passwords.url) $pass_folder_id $pass_type_id
 
-        create_password -password_org_id "$pass_org_id" -password_name "$($passwords.name)" -password_username "$($passwords.username)" -password_value "$($passwords.password)" -password_otp "$($passwords.otp_secret)" -password_url "$($passwords.url)" -password_notes "$($passwords.notes)" -password_folder_id "$pass_folder_id" -password_category_id "$pass_type_id"
+        create_password -password_org_id "$pass_org_id" -password_name "$($passwords.name)" -password_username "$($passwords.username)" -password_value "$($passwords.password)" -password_otp "$($passwords.otp_secret)" -password_url "$($passwords.url)" -password_notes "$($passwords.notes)" -password_folder_id "$pass_folder_id" -password_category_id "$pass_type_id" -type_name "$($passwords.password_category)" -folder_name $($passwords.password_folder) -organization $passwords.organization
     
     
     }
