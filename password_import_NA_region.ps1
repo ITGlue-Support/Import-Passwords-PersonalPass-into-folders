@@ -73,7 +73,19 @@ function get_org_id {
     )
     try{
 
+        if ($org_name -match ","){
+
+          $org_name = $org_name -replace ",", '\,'
+
+          $encodedName = [Uri]::EscapeDataString($org_name) -replace '\\%5C,','\,'
+
+          $org_url = "https://api.itglue.com/organizations?filter[name]=$encodedName"
+
+        }else {
+
         $org_url = "https://api.itglue.com/organizations?filter[name]=" + [uri]::EscapeDataString($org_name)
+
+        }
 
         $find_org = Invoke-RestMethod -Uri $org_url -Method 'GET' -Headers $headers
 
@@ -318,8 +330,6 @@ function extract_csv {
         else{
 
             Write-Host "Unable to create the password record $($passwords.name) due to the missing organization! Moving to the next records" -ForegroundColor Yellow
-
-            return
         }
 
         Write-Host $pass_org_id $($passwords.name) $($passwords.username) $($passwords.password) $($passwords.otp_secret) $($passwords.url) $pass_folder_id $pass_type_id
@@ -367,6 +377,7 @@ if ($access_token -eq $null){
     
 
 }
+
 
 
 
