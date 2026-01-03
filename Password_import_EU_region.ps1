@@ -71,7 +71,19 @@ function get_org_id {
     )
     try{
 
-        $org_url = "https://api.itglue.com/organizations?filter[name]=" + [uri]::EscapeDataString($org_name)
+        if ($org_name -match ","){
+
+          $org_name = $org_name -replace ",", '\,'
+
+          $encodedName = [Uri]::EscapeDataString($org_name) -replace '\\%5C,','\,'
+
+          $org_url = "https://api.eu.itglue.com/organizations?filter[name]=$encodedName"
+
+        }else {
+
+        $org_url = "https://api.eu.itglue.com/organizations?filter[name]=" + [uri]::EscapeDataString($org_name)
+
+        }
 
         $find_org = Invoke-RestMethod -Uri $org_url -Method 'GET' -Headers $headers
         if ($($find_org.data.id).Count -gt 1) {
@@ -363,6 +375,7 @@ if ($access_token -eq $null){
     $access_token = request_data
     
 }
+
 
 
 
