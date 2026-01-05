@@ -111,7 +111,7 @@ function get_org_id {
         $find_org = Invoke-RestMethod -Uri $org_url -Method 'GET' -Headers $headers
         if ($($find_org.data.id) -eq $null) {
 
-            Write-Host "Unable to retrieve the Organization Id."
+            Write-Host "Unable to retrieve the Organization Id for $($org_name)."
             continue
         
         }
