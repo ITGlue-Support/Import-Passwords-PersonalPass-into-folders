@@ -126,10 +126,7 @@ function get_org_id {
         }
     }
     catch {
-        Write-Host "Make sure organization $org_name already exist in IT Glue! Error: $($_.exception.message)" -ForegroundColor Red
-
-
-
+        Write-Host "Error: $($_.exception.message)" -ForegroundColor Red
     }
 }
 
