@@ -109,24 +109,22 @@ function get_org_id {
         }
 
         $find_org = Invoke-RestMethod -Uri $org_url -Method 'GET' -Headers $headers
-        if ($($find_org.data.id) -eq $null) {
-
-            Write-Host "Unable to retrieve the Organization Id for $($org_name)."
-            continue
-        
-        }
-        elseif ($($find_org.data.id).Count -gt 1) {
+        if ($($find_org.data.id).Count -gt 1) {
         
             Write-Host "Found mutliple organization with similar name. Using the organization with id:$($find_org.data.id[0])"
 
             return $($find_org.data.id[0])
+
         }else{
 
             return $($find_org.data.id)
         }
     }
     catch {
-        Write-Host "Error: $($_.exception.message)" -ForegroundColor Red
+        Write-Host "Make sure organization $org_name already exist in IT Glue! Error: $($_.exception.message)" -ForegroundColor Red
+
+
+
     }
 }
 
@@ -362,6 +360,9 @@ function extract_csv {
 
             Write-Host "Unable to create the password record $($passwords.name) due to the missing organization! Moving to the next records" -ForegroundColor Yellow
 
+            failed_records -name $($passwords.name) -organization $($passwords.organization) -username $($passwords.username) -password $($passwords.password) -url $($passwords.url) -notes $($passwords.notes) -password_category $($passwords.password_category) -password_folder $($passwords.password_folder) -otp_secret $($passwords.otp_secret)
+
+            continue
         }
 
         Write-Host $pass_org_id $($passwords.name) $($passwords.username) $($passwords.password) $($passwords.otp_secret) $($passwords.url) $pass_folder_id $pass_type_id
