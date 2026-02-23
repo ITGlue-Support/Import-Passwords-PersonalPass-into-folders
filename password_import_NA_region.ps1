@@ -351,7 +351,7 @@ function request_data {
     }
 
     if ($password -eq $null) {
-        $maskpassword = Read-Host "Enter your MyGlue password" -AsSecureString
+        $maskpassword = Read-Host "Enter your IT Glue password" -AsSecureString
 
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($maskpassword)
 
@@ -377,6 +377,7 @@ if ($access_token -eq $null){
     
 
 }
+
 
 
 
