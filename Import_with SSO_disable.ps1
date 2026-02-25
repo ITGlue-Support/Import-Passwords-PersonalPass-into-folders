@@ -283,7 +283,7 @@ function create_password {
         [string]$password_category_id,
         [string]$type_name,
         [string]$folder_name,
-        [string]$organization
+        [string]$organization,
         [string]$personal
     )
 
