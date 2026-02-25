@@ -1,4 +1,4 @@
-# Import Passwords into Password folder
+# Import Passwords/Personal Paswords into Password folder
 
 ## Overview
 This script helps you import passwords into IT Glue password folders using the API.
