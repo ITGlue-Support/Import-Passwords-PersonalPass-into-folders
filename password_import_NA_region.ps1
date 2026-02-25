@@ -256,7 +256,7 @@ function create_password {
         [string]$password_url,
         [string]$password_notes,
         [string]$password_folder_id,
-        [string]$password_category_id
+        [string]$password_category_id,
         [string]$personal
     )
 
@@ -378,6 +378,7 @@ if ($access_token -eq $null){
     
 
 }
+
 
 
 
