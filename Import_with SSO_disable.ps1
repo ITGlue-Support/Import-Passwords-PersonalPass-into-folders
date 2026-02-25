@@ -284,6 +284,7 @@ function create_password {
         [string]$type_name,
         [string]$folder_name,
         [string]$organization
+        [string]$personal
     )
 
 
@@ -300,6 +301,7 @@ $pass_create_body = @{
             "password-category-id" = $password_category_id
             "password-folder-id"   = $password_folder_id
             otpSecret              = $password_otp.Trim()
+            personal               = $personal
         }
     }
 } | ConvertTo-Json -Depth 5
@@ -367,7 +369,7 @@ function extract_csv {
 
         Write-Host $pass_org_id $($passwords.name) $($passwords.username) $($passwords.password) $($passwords.otp_secret) $($passwords.url) $pass_folder_id $pass_type_id
 
-        create_password -password_org_id "$pass_org_id" -password_name "$($passwords.name)" -password_username "$($passwords.username)" -password_value "$($passwords.password)" -password_otp "$($passwords.otp_secret)" -password_url "$($passwords.url)" -password_notes "$($passwords.notes)" -password_folder_id "$pass_folder_id" -password_category_id "$pass_type_id" -type_name "$($passwords.password_category)" -folder_name $($passwords.password_folder) -organization $passwords.organization
+        create_password -password_org_id "$pass_org_id" -password_name "$($passwords.name)" -password_username "$($passwords.username)" -password_value "$($passwords.password)" -password_otp "$($passwords.otp_secret)" -password_url "$($passwords.url)" -password_notes "$($passwords.notes)" -password_folder_id "$pass_folder_id" -password_category_id "$pass_type_id" -type_name "$($passwords.password_category)" -folder_name $($passwords.password_folder) -organization $passwords.organization -personal "$($passwords.personal)"
     
     
     }
